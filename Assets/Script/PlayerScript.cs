@@ -9,7 +9,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] public float gravityForce;
     [SerializeField] public bool directionRotate;
     public Rigidbody2D rb;
-    private bool isCollider;
+    [SerializeField] private bool isCollider;
     
     [SerializeField] enum State { up, down, right, left };
 
@@ -31,7 +31,7 @@ public class PlayerScript : MonoBehaviour
         }
         if (!isCollider)
         {
-            rb.velocity = Vector2.zero;
+            //rb.velocity = Vector2.zero;
            // transform.position += new Vector3(gravityDirection.x, gravityDirection.y, 0) * Time.deltaTime;
         }
     }
@@ -53,10 +53,12 @@ public class PlayerScript : MonoBehaviour
         {
             gravityDirection = new Vector2(-1, 0);
         }
+        //âΩÇ©Ç…êGÇÍÇƒÇ¢ÇÈÇ©
         if (collision != null)
         {
             isCollider = true;
         }
+   
         if (collision.CompareTag("BombBlock"))
         {
             //float directionX = transform.position.x - collision.transform.position.x;
@@ -69,6 +71,9 @@ public class PlayerScript : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        isCollider = false;
+        //if (isCollider)
+        //{
+        //    isCollider = false;
+        //}
     }
 }

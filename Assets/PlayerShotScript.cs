@@ -10,7 +10,7 @@ public class PlayerShotScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -18,9 +18,14 @@ public class PlayerShotScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(bomBlock,transform);
-            
+            //ÉuÉçÉbÉNÇÃê∂ê¨
+            GameObject bombblock;
+            bombblock = Instantiate(bomBlock);
+            bombblock.GetComponent<BombBlockScript>().moveDirection = transform.GetComponent<PlayerDirectionScript>().shotDirection;
+            bombblock.transform.position = transform.position;
+            bombblock.transform.parent = transform.parent;
+
         }
     }
-        
+
 }

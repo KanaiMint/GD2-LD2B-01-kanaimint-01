@@ -41,8 +41,8 @@ public class WallUpScript : MonoBehaviour
         }
         else if (onPlayer)
         {
-            transform.position += new Vector3(0, moveSpeed * 1.5f, 0) * Time.deltaTime;
             transform.position=new(transform.position.x, Mathf.Clamp(transform.position.y,-8.0f,0),transform.position.z);
+            transform.position += new Vector3(0, moveSpeed * 1.5f, 0) * Time.deltaTime;
             // 各オブジェクトに対して処理を実行
             foreach (GameObject obj in taggedObjects)
             {

@@ -55,6 +55,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Point
       objectReference: {fileID: 0}
+    - target: {fileID: 2301765359623456559, guid: 80b4d1f299e748d469a8794b57c47283, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80b4d1f299e748d469a8794b57c47283, type: 3}
 --- !u!1001 &6109234727183340806
@@ -64,6 +68,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6565670114619067499, guid: b66e2e5a3226b694fbd8bedc260724a2, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6565670114619067499, guid: b66e2e5a3226b694fbd8bedc260724a2, type: 3}
       propertyPath: m_UsedByEffector
       value: 1
@@ -123,6 +131,27 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6914010137010271928, guid: b66e2e5a3226b694fbd8bedc260724a2, type: 3}
   m_PrefabInstance: {fileID: 6109234727183340806}
   m_PrefabAsset: {fileID: 0}
+--- !u!50 &8460395754381650454
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809279091127362494}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
 --- !u!252 &365397411
 SurfaceEffector2D:
   m_ObjectHideFlags: 0
@@ -155,6 +184,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surfaceEffector2: {fileID: 365397411}
   player: {fileID: 0}
+  moveDirection: {x: 0, y: 0}
+  moveSpeed: 3
 --- !u!4 &4496980925310600129 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7683177035944351431, guid: b66e2e5a3226b694fbd8bedc260724a2, type: 3}

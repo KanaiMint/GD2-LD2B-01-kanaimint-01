@@ -8,17 +8,34 @@ public class BombBlockScript : MonoBehaviour
     public SurfaceEffector2D surfaceEffector2;
     public PlayerScript player;
     public Vector2 moveDirection;
+    [SerializeField] float moveSpeed;
+    BoxCollider2D boxCollider;
+    //子オブジェクトの順番で取得。最初が0で二番目が1となる。つまり↓は最初の子オブジェクト
+    GameObject child;
     // Start is called before the first frame update
+    bool stay;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        boxCollider.isTrigger = true;
+        gameObject.GetComponent<SurfaceEffector2D>().enabled = false;       
+        child = transform.GetChild(0).gameObject;
+        child.GetComponent<BoxCollider2D>().enabled = false;
+        child.GetComponent<PointEffector2D>().enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
-        Ray();       
+        // Ray();
+        if (!stay)
+        {
+            transform.position += new Vector3(moveDirection.x * moveSpeed, moveDirection.y * moveSpeed, 0) * Time.deltaTime;
+
+        }
+
     }
 
     private void Ray()
@@ -39,27 +56,29 @@ public class BombBlockScript : MonoBehaviour
         RaycastHit rightHit;
         RaycastHit leftHit;
 
-        RaycastHit2D hit=Physics2D.Raycast(origin, upDirection, 10);
+        RaycastHit2D hit = Physics2D.Raycast(origin, upDirection, 10);
 
         if (hit.collider != gameObject)
         {
             if (hit.collider.gameObject.CompareTag("Player"))
             {
                 Debug.Log("hit player");
-            } if (hit.collider.gameObject.CompareTag("BombBlock"))
+            }
+            if (hit.collider.gameObject.CompareTag("BombBlock"))
             {
                 Debug.Log("hit Block");
             }
 
-           // Debug.Log("nanikani");
+            // Debug.Log("nanikani");
         }
 
-        if (Physics.Raycast(upRay, out upHit,10))
+        if (Physics.Raycast(upRay, out upHit, 10))
         {
             if (upHit.collider.CompareTag("Player"))
             {
                 Debug.Log("Player");
-            } if (upHit.collider.name=="Player")
+            }
+            if (upHit.collider.name == "Player")
             {
                 Debug.Log("Player");
             }
@@ -76,7 +95,7 @@ public class BombBlockScript : MonoBehaviour
                 Debug.Log("awdadad");
             }
         }
-       
+
 
         DrawRay(upRay);
         DrawRay(downRay);
@@ -86,6 +105,7 @@ public class BombBlockScript : MonoBehaviour
 
     private void Move()
     {
+        //プレイヤーが転がる方向
         if (player.directionRotate)
         {
             surfaceEffector2.speed = player.moveSpeed;
@@ -99,9 +119,70 @@ public class BombBlockScript : MonoBehaviour
     {
         Debug.DrawRay(ray.origin, ray.direction, Color.magenta);
     }
-    //private void DrawRay(Ray ray,bool isCollide)
-    //{
 
-    //    Debug.DrawRay(ray.origin, ray.direction, Color.magenta);
-    //}
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("WallUp") || collision.CompareTag("WallDown") || collision.CompareTag("WallRight") || collision.CompareTag("WallLeft"))
+        {
+            if (!stay)
+            {
+                boxCollider.isTrigger = false;
+                child.GetComponent<PointEffector2D>().enabled = true;
+                child.GetComponent<BoxCollider2D>().enabled = true;
+                gameObject.GetComponent<SurfaceEffector2D>().enabled = true;
+
+                //ぶつかった場所のオブジェクトに親子付け
+                transform.parent = collision.gameObject.transform.parent;
+                //絶対値が大きいほうに整える
+                float a = Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x);
+                float b = Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y);
+                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) >= Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
+                {
+                    if (transform.position.x > collision.gameObject.transform.position.x)
+                    {
+                        transform.position = new Vector3(collision.gameObject.transform.position.x+1, collision.gameObject.transform.position.y);
+
+                    }
+                    if (transform.position.x < collision.gameObject.transform.position.x)
+                    {
+                        transform.position = new Vector3(transform.position.x-1, collision.gameObject.transform.position.y);
+
+                    }
+
+                }
+                //else
+                //{
+                //    transform.position = new Vector3(collision.gameObject.transform.position.x, transform.position.y);
+                //}
+                Debug.Log("oyako");
+                stay = true;
+            }
+        }
+        if (collision.CompareTag("BombBlock"))
+        {
+            if (!stay)
+            {
+                boxCollider.isTrigger = false;
+                child.GetComponent<PointEffector2D>().enabled = true;
+                child.GetComponent<BoxCollider2D>().enabled = true;
+                gameObject.GetComponent<SurfaceEffector2D>().enabled = true;
+
+                //ぶつかった場所のオブジェクトに親子付け
+                transform.parent = collision.gameObject.transform.parent;
+                //絶対値が大きいほうに整える
+                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) <= Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
+                {
+                    transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y);
+                }
+                //else
+                //{
+                //    transform.position = new Vector3(collision.gameObject.transform.position.x, transform.position.y);
+                //}
+                Debug.Log("oyako");
+                stay = true;
+            }
+        }
+    }
+
 }

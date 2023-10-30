@@ -36,8 +36,8 @@ public class WallRightScript : MonoBehaviour
         }
         else if (onPlayer)
         {
-            transform.position += new Vector3(+moveSpeed * 1.5f, 0, 0) * Time.deltaTime;
             transform.position = new(Mathf.Clamp(transform.position.x, -8.0f,0), transform.position.y, transform.position.z);
+            transform.position += new Vector3(+moveSpeed * 1.5f, 0, 0) * Time.deltaTime;
             // 各オブジェクトに対して処理を実行
             foreach (GameObject obj in taggedObjects)
             {
