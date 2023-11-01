@@ -1,7 +1,10 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UIElements.Experimental;
+using static UnityEngine.UI.Image;
 
 public class BombBlockScript : MonoBehaviour
 {
@@ -14,28 +17,61 @@ public class BombBlockScript : MonoBehaviour
     GameObject child;
     // Start is called before the first frame update
     bool stay;
+    // オブジェクトの元のスケールを保存
+    Vector3 originalScale;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>();
         boxCollider = GetComponent<BoxCollider2D>();
         boxCollider.isTrigger = true;
-        gameObject.GetComponent<SurfaceEffector2D>().enabled = false;       
+        gameObject.GetComponent<SurfaceEffector2D>().enabled = false;
         child = transform.GetChild(0).gameObject;
         child.GetComponent<BoxCollider2D>().enabled = false;
         child.GetComponent<PointEffector2D>().enabled = false;
+        transform.localScale= Vector3.zero;
+        originalScale = transform.localScale;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         Move();
+
+        transform.DOScale(
+    new Vector3(1, 1, 1), // スケール値
+    1f                    // 演出時間
+);
+
         // Ray();
         if (!stay)
         {
             transform.position += new Vector3(moveDirection.x * moveSpeed, moveDirection.y * moveSpeed, 0) * Time.deltaTime;
 
         }
+        // レイを飛ばす始点
+        Vector2 rayOrigin = transform.position;
 
+        // レイの方向（下向きに飛ばす例）
+        Vector2 rayDirection = Vector2.down;
+
+        // レイの長さ
+        float rayLength = 1.0f;
+
+        // レイキャストを実行
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, rayDirection, rayLength);
+
+        // レイが何かに当たった場合
+        if (hit.collider != null)
+        {
+            Debug.Log("Hit something: " + hit.collider.name);
+
+            // ここで当たったオブジェクトに対する処理を行う
+        }
+        //レイの生成
+        Ray Ray = new Ray(rayOrigin, rayDirection);
+        DrawRay(Ray);
     }
 
     private void Ray()
@@ -134,22 +170,34 @@ public class BombBlockScript : MonoBehaviour
 
                 //ぶつかった場所のオブジェクトに親子付け
                 transform.parent = collision.gameObject.transform.parent;
+               
                 //絶対値が大きいほうに整える
-                float a = Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x);
-                float b = Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y);
-                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) >= Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
+                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) <= Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
                 {
-                    if (transform.position.x > collision.gameObject.transform.position.x)
+                    //絶対値Yのほうが大きかったら
+                    if (transform.position.y - collision.transform.position.y <= 0)
                     {
-                        transform.position = new Vector3(collision.gameObject.transform.position.x+1, collision.gameObject.transform.position.y);
+                        transform.position = new Vector3(collision.transform.position.x, collision.transform.position.y - 1.0f);
+                    }
+                    else
+                    {
+                        transform.position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f);
 
                     }
-                    if (transform.position.x < collision.gameObject.transform.position.x)
+                }
+                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) > Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
+                {
+                    //絶対値Xのほうが大きかったら
+                    if (transform.position.x - collision.gameObject.transform.position.x <= 0)
                     {
-                        transform.position = new Vector3(transform.position.x-1, collision.gameObject.transform.position.y);
+                        transform.position = new Vector3(collision.gameObject.transform.position.x - 1.0f, collision.gameObject.transform.position.y);
 
                     }
+                    else
+                    {
+                        transform.position = new Vector3(collision.gameObject.transform.position.x + 1.0f, collision.gameObject.transform.position.y);
 
+                    }
                 }
                 //else
                 //{
@@ -161,7 +209,7 @@ public class BombBlockScript : MonoBehaviour
         }
         if (collision.CompareTag("BombBlock"))
         {
-            if (!stay)
+            if (!stay&&collision.gameObject.GetComponent<BombBlockScript>().stay)
             {
                 boxCollider.isTrigger = false;
                 child.GetComponent<PointEffector2D>().enabled = true;
@@ -173,12 +221,31 @@ public class BombBlockScript : MonoBehaviour
                 //絶対値が大きいほうに整える
                 if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) <= Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
                 {
-                    transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y);
+                    //絶対値Yのほうが大きかったら
+                    if (transform.position.y - collision.transform.position.y <= 0)
+                    {
+                        transform.position = new Vector3(collision.transform.position.x, collision.transform.position.y - 1.0f);
+                    }
+                    else
+                    {
+                        transform.position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f);
+
+                    }
                 }
-                //else
-                //{
-                //    transform.position = new Vector3(collision.gameObject.transform.position.x, transform.position.y);
-                //}
+                if (Mathf.Abs(transform.position.x - collision.gameObject.transform.position.x) > Mathf.Abs(transform.position.y - collision.gameObject.transform.position.y))
+                {
+                    //絶対値Xのほうが大きかったら
+                    if (transform.position.x - collision.gameObject.transform.position.x <= 0)
+                    {
+                        transform.position = new Vector3(collision.gameObject.transform.position.x - 1.0f, collision.gameObject.transform.position.y);
+
+                    }
+                    else
+                    {
+                        transform.position = new Vector3(collision.gameObject.transform.position.x + 1.0f, collision.gameObject.transform.position.y);
+
+                    }
+                }
                 Debug.Log("oyako");
                 stay = true;
             }

@@ -10,7 +10,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] public bool directionRotate;
     public Rigidbody2D rb;
     [SerializeField] private bool isCollider;
-    
+    public bool isGameOver;
     [SerializeField] enum State { up, down, right, left };
 
     // Start is called before the first frame update
@@ -32,7 +32,7 @@ public class PlayerScript : MonoBehaviour
         if (!isCollider)
         {
             //rb.velocity = Vector2.zero;
-           // transform.position += new Vector3(gravityDirection.x, gravityDirection.y, 0) * Time.deltaTime;
+            // transform.position += new Vector3(gravityDirection.x, gravityDirection.y, 0) * Time.deltaTime;
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -58,7 +58,10 @@ public class PlayerScript : MonoBehaviour
         {
             isCollider = true;
         }
-   
+        if (collision.CompareTag("WallUp") && collision.CompareTag("WallDown"))
+        {
+
+        }
         if (collision.CompareTag("BombBlock"))
         {
             //float directionX = transform.position.x - collision.transform.position.x;
@@ -76,4 +79,26 @@ public class PlayerScript : MonoBehaviour
         //    isCollider = false;
         //}
     }
+
+    void OnCollisionStay(Collision collision)
+    {
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            if (contact.otherCollider.CompareTag("CrushingObjectTag"))
+            {
+                // 他のコリジョンが特定のタグを持つ場合に押しつぶされたと判定
+                Debug.Log("他のコリジョンに押しつぶされています");
+            }
+        }
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("CrushingObjectTag"))
+        {
+            // 他のオブジェクトに押しつぶされた場合
+            isGameOver = true;
+            // その他のゲームオーバー処理を実行
+        }
+    }
+
 }
